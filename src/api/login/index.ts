@@ -22,3 +22,7 @@ export const getAdminRoleApi = (
 export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>> => {
   return request.get({ url: '/mock/role/list2', params })
 }
+/**获取验证码 */
+export const getCaptchaApi = (): Promise<IResponse> => {
+  return request.get({ url: '/api/v1/captcha' })
+}

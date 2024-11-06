@@ -94,7 +94,7 @@ export default defineComponent({
     const elFormRef = ref<ComponentRef<typeof ElForm>>()
 
     const mergeProps = ref<FormProps>({})
-
+    //传过来的参数
     const getProps = computed(() => {
       const propsObj = { ...props }
       Object.assign(propsObj, unref(mergeProps))
@@ -379,7 +379,6 @@ export default defineComponent({
       }
       return props as FormProps
     }
-
     return () => (
       <ElForm
         ref={elFormRef}

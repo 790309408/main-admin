@@ -2,9 +2,9 @@
 import { reactive, ref, watch, onMounted, unref } from 'vue'
 import { Form, FormSchema } from '@/components/Form'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElCheckbox, ElLink } from 'element-plus'
+import { ElCheckbox, ElLink, ElInput, ElImage } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
-import { loginApi, getTestRoleApi, getAdminRoleApi } from '@/api/login'
+import { loginApi, getTestRoleApi, getAdminRoleApi, getCaptchaApi } from '@/api/login'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
@@ -14,7 +14,6 @@ import { useValidator } from '@/hooks/web/useValidator'
 import { Icon } from '@/components/Icon'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
-
 const { required } = useValidator()
 
 const emit = defineEmits(['to-register'])
@@ -33,7 +32,8 @@ const rules = {
   username: [required()],
   password: [required()]
 }
-
+const verifycode = ref('')
+const verifycodeImage = ref('')
 const schema = reactive<FormSchema[]>([
   {
     field: 'title',
@@ -73,6 +73,37 @@ const schema = reactive<FormSchema[]>([
         width: '100%'
       },
       placeholder: 'admin or test'
+    }
+  },
+  {
+    field: 'verifycode',
+    label: '验证码', //t('login.username')
+    colProps: {
+      span: 24
+    },
+    formItemProps: {
+      slots: {
+        default: () => {
+          return (
+            <>
+              <div class="flex justify-between items-center w-[100%]">
+                <ElInput
+                  v-model={verifycode.value}
+                  style={{ width: 'calc(100% - 150px)' }}
+                  size="large"
+                  placeholder="验证码"
+                />
+                <ElImage
+                  src={verifycodeImage.value}
+                  fit="cover"
+                  onClick={_getCaptchaApi}
+                  class="h-[38px] w-[114px] cursor-pointer"
+                />
+              </div>
+            </>
+          )
+        }
+      }
     }
   },
   {
@@ -187,7 +218,7 @@ const schema = reactive<FormSchema[]>([
 const iconSize = 30
 
 const remember = ref(userStore.getRememberMe)
-
+/**从缓存获取登录信息 */
 const initLoginInfo = () => {
   const loginInfo = userStore.getLoginInfo
   if (loginInfo) {
@@ -195,8 +226,16 @@ const initLoginInfo = () => {
     setValues({ username, password })
   }
 }
+/**获取验证码图片 */
+const _getCaptchaApi = async () => {
+  try {
+    const { data: codeimg } = await getCaptchaApi()
+    verifycodeImage.value = codeimg
+  } catch {}
+}
 onMounted(() => {
   initLoginInfo()
+  _getCaptchaApi()
 })
 
 const { formRegister, formMethods } = useForm()

@@ -22,7 +22,8 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "element-plus": ["node_modules/element-plus"]
     },
     "types": [
       "@intlify/unplugin-vue-i18n/types",

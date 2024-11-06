@@ -42,7 +42,7 @@ const themeChange = () => {
     <ElScrollbar class="h-full">
       <div class="relative flex mx-auto h-100vh">
         <div
-          :class="`${prefixCls}__left flex-1 bg-gray-500 bg-opacity-20 relative p-30px lt-xl:hidden`"
+          :class="`${prefixCls}__left flex-1 bg-gray-500  bg-opacity-20 relative p-30px lt-xl:hidden`"
         >
           <div class="flex items-center relative text-white">
             <img src="@/assets/imgs/logo.png" alt="" class="w-48px h-48px mr-10px" />
