@@ -26,3 +26,7 @@ export const getTestRoleApi = (params: RoleParams): Promise<IResponse<string[]>>
 export const getCaptchaApi = (): Promise<IResponse> => {
   return request.get({ url: '/api/v1/captcha' })
 }
+/**登录接口 */
+export const login = (data: UserType): Promise<IResponse> => {
+  return request.post({ url: '/api/v1/login', data })
+}

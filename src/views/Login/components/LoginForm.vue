@@ -4,7 +4,7 @@ import { Form, FormSchema } from '@/components/Form'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCheckbox, ElLink, ElInput, ElImage } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
-import { loginApi, getTestRoleApi, getAdminRoleApi, getCaptchaApi } from '@/api/login'
+import { loginApi, getTestRoleApi, getAdminRoleApi, getCaptchaApi, login } from '@/api/login'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
@@ -32,8 +32,9 @@ const rules = {
   username: [required()],
   password: [required()]
 }
-const verifycode = ref('')
+const code = ref('')
 const verifycodeImage = ref('')
+const uuid = ref('')
 const schema = reactive<FormSchema[]>([
   {
     field: 'title',
@@ -76,7 +77,7 @@ const schema = reactive<FormSchema[]>([
     }
   },
   {
-    field: 'verifycode',
+    field: 'code',
     label: '验证码', //t('login.username')
     colProps: {
       span: 24
@@ -88,17 +89,18 @@ const schema = reactive<FormSchema[]>([
             <>
               <div class="flex justify-between items-center w-[100%]">
                 <ElInput
-                  v-model={verifycode.value}
+                  v-model={code.value}
                   style={{ width: 'calc(100% - 150px)' }}
                   size="large"
                   placeholder="验证码"
                 />
-                <ElImage
-                  src={verifycodeImage.value}
-                  fit="cover"
-                  onClick={_getCaptchaApi}
-                  class="h-[38px] w-[114px] cursor-pointer"
-                />
+                <div onClick={_getCaptchaApi}>
+                  <ElImage
+                    src={verifycodeImage.value}
+                    fit="cover"
+                    class="h-[38px] w-[114px] cursor-pointer"
+                  />
+                </div>
               </div>
             </>
           )
@@ -229,8 +231,9 @@ const initLoginInfo = () => {
 /**获取验证码图片 */
 const _getCaptchaApi = async () => {
   try {
-    const { data: codeimg } = await getCaptchaApi()
-    verifycodeImage.value = codeimg
+    const { data } = await getCaptchaApi()
+    verifycodeImage.value = data.b64s
+    uuid.value = data.id
   } catch {}
 }
 onMounted(() => {
@@ -268,8 +271,15 @@ const signIn = async () => {
       const formData = await getFormData<UserType>()
 
       try {
-        const res = await loginApi(formData)
-
+        // {"username":"admin","password":"123456","rememberMe":false,"code":"3076","uuid":"GkX6tbnzMTeVerqqeDUv"}
+        const params = {
+          ...formData,
+          code: code.value,
+          uuid: uuid.value,
+          rememberMe: false
+        }
+        const res = await login(params)
+        console.log(res)
         if (res) {
           // 是否记住我
           if (unref(remember)) {
@@ -322,7 +332,8 @@ const getRole = async () => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })
     permissionStore.setIsAddRouters(true)
-    push({ path: redirect.value || permissionStore.addRouters[0].path })
+    const url = redirect.value || permissionStore.addRouters[0].path
+    push({ path: url })
   }
 }
 

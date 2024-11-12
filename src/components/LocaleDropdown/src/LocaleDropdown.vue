@@ -13,13 +13,13 @@ const prefixCls = getPrefixCls('locale-dropdown')
 defineProps({
   color: propTypes.string.def('')
 })
-
 const localeStore = useLocaleStore()
-
+// 语言包列表
 const langMap = computed(() => localeStore.getLocaleMap)
-
+// 当前使用语言包
 const currentLang = computed(() => localeStore.getCurrentLocale)
 
+// 设置语言
 const setLang = (lang: LocaleType) => {
   if (lang === unref(currentLang).lang) return
   // 需要重新加载页面让整个语言多初始化

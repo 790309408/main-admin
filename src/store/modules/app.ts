@@ -275,6 +275,7 @@ export const useAppStore = defineStore('app', {
       }
     },
     setMenuTheme(color: string) {
+      // 修改 document.documentElement css变量
       const primaryColor = useCssVar('--el-color-primary', document.documentElement)
       const isDarkColor = colorIsDark(color)
       const theme: Recordable = {

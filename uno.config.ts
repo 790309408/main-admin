@@ -33,15 +33,17 @@ const createPresetIcons = () => {
 export default defineConfig({
   // ...UnoCSS options
   rules: [
+    // ['m-1', { margin: '1px' }],
+    // [/^m-([\.\d]+)$/, ([_, num]) => ({ margin: `${num}px` })],
     [
       /^overflow-ellipsis$/,
       ([], { rawSelector }) => {
         const selector = e(rawSelector)
         return `
-${selector} {
-  text-overflow: ellipsis;
-}
-`
+            ${selector} {
+              text-overflow: ellipsis;
+            }
+      `
       }
     ],
     [

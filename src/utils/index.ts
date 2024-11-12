@@ -48,6 +48,11 @@ export const setCssVar = (prop: string, val: any, dom = document.documentElement
 }
 
 export const getCssVar = (prop: string, dom = document.documentElement) => {
+  /**
+   * getComputedStyle 方法接受两个参数：
+   * 1 元素：你想要获取样式的元素。
+   * 2 伪元素（可选）：指定一个伪元素，如 :before 或 :after。如果不指定，则返回元素本身的样式。
+   */
   return getComputedStyle(dom).getPropertyValue(prop)
 }
 

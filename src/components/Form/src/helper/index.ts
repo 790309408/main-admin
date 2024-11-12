@@ -150,6 +150,7 @@ export const initModel = (schema: FormSchema[], formModel: Recordable) => {
       // const hasField = Reflect.has(model, v.field)
       const hasField = get(model, v.field)
       // 如果先前已经有值存在，则不进行重新赋值，而是采用现有的值
+      // object：要修改的对象。path：要设置的属性路径，可以是数组或字符串。value：要设置的值。
       set(
         model,
         v.field,

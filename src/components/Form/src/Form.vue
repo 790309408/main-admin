@@ -91,6 +91,13 @@ export default defineComponent({
   emits: ['register'],
   setup(props, { slots, expose, emit }) {
     // element form 实例
+    /**
+     * class C {
+          x = 0;
+          y = 0;
+        }
+    type T = InstanceType<typeof C>; // T 将是 C 的实例类型，即 T = C
+     */
     const elFormRef = ref<ComponentRef<typeof ElForm>>()
 
     const mergeProps = ref<FormProps>({})
