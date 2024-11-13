@@ -27,6 +27,10 @@ export const getCaptchaApi = (): Promise<IResponse> => {
   return request.get({ url: '/api/v1/captcha' })
 }
 /**登录接口 */
-export const login = (data: UserType): Promise<IResponse> => {
+export const login = (data: UserType): Promise<any> => {
   return request.post({ url: '/api/v1/login', data })
+}
+/**获取用户信息 */
+export const getInfo = (): Promise<IResponse> => {
+  return request.get({ url: '/api/v1/getinfo' })
 }

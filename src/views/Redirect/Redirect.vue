@@ -14,7 +14,7 @@ Reflect.deleteProperty(params, '_redirect_type')
 Reflect.deleteProperty(params, 'path')
 
 const _path = Array.isArray(path) ? path.join('/') : path
-
+console.log('_path', _path)
 if (_redirect_type === 'name') {
   replace({
     name: _path,

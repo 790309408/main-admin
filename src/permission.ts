@@ -22,6 +22,8 @@ router.beforeEach(async (to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
+      console.log('permissionStore.getIsAddRouters', permissionStore.getIsAddRouters)
+
       if (permissionStore.getIsAddRouters) {
         next()
         return

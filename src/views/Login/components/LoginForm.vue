@@ -4,18 +4,27 @@ import { Form, FormSchema } from '@/components/Form'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElCheckbox, ElLink, ElInput, ElImage } from 'element-plus'
 import { useForm } from '@/hooks/web/useForm'
-import { loginApi, getTestRoleApi, getAdminRoleApi, getCaptchaApi, login } from '@/api/login'
+import {
+  loginApi,
+  getTestRoleApi,
+  getAdminRoleApi,
+  getCaptchaApi,
+  login,
+  getInfo
+} from '@/api/login'
+import { getMenus } from '@/api/role'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
 import { UserType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
+import { useHandlerMenus } from '@/hooks/web/useMenu'
 import { Icon } from '@/components/Icon'
 import { useUserStore } from '@/store/modules/user'
 import { BaseButton } from '@/components/Button'
 const { required } = useValidator()
-
+const { convertMenusToRoutes } = useHandlerMenus()
 const emit = defineEmits(['to-register'])
 
 const appStore = useAppStore()
@@ -271,15 +280,14 @@ const signIn = async () => {
       const formData = await getFormData<UserType>()
 
       try {
-        // {"username":"admin","password":"123456","rememberMe":false,"code":"3076","uuid":"GkX6tbnzMTeVerqqeDUv"}
         const params = {
           ...formData,
           code: code.value,
           uuid: uuid.value,
           rememberMe: false
         }
+        // 登录获取鉴权信息
         const res = await login(params)
-        console.log(res)
         if (res) {
           // 是否记住我
           if (unref(remember)) {
@@ -290,8 +298,21 @@ const signIn = async () => {
           } else {
             userStore.setLoginInfo(undefined)
           }
+          userStore.setToken(res.token)
           userStore.setRememberMe(unref(remember))
-          userStore.setUserInfo(res.data)
+          // 获取用户信息
+          const { data: userinfo } = await getInfo()
+          //临时处理
+          let user: UserType = {
+            username: formData.username,
+            password: formData.password,
+            role: 'admin',
+            roleId: '1',
+            permissions: userinfo.permissions,
+            avatar: userinfo.avatar,
+            userId: userinfo.userId
+          }
+          userStore.setUserInfo(user)
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
             getRole()
@@ -319,10 +340,13 @@ const getRole = async () => {
   }
   const res =
     appStore.getDynamicRouter && appStore.getServerDynamicRouter
-      ? await getAdminRoleApi(params)
+      ? await getMenus()
       : await getTestRoleApi(params)
+  console.log(res)
   if (res) {
-    const routers = res.data || []
+    const menus = res.data || []
+    const routers = convertMenusToRoutes(menus)
+    console.log(routers)
     userStore.setRoleRouters(routers)
     appStore.getDynamicRouter && appStore.getServerDynamicRouter
       ? await permissionStore.generateRoutes('server', routers).catch(() => {})
@@ -332,7 +356,7 @@ const getRole = async () => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })
     permissionStore.setIsAddRouters(true)
-    const url = redirect.value || permissionStore.addRouters[0].path
+    const url = redirect.value || '/'
     push({ path: url })
   }
 }

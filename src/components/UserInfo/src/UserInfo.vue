@@ -19,6 +19,11 @@ const { getPrefixCls } = useDesign()
 const prefixCls = getPrefixCls('user-info')
 
 const { t } = useI18n()
+import logo from '@/assets/imgs/avatar.jpg'
+// 头像
+const avatar = computed(() => {
+  return userStore.getUserInfo?.avatar ?? logo
+})
 
 const loginOut = () => {
   userStore.logoutConfirm()
@@ -39,11 +44,7 @@ const toDocument = () => {
 <template>
   <ElDropdown class="custom-hover" :class="prefixCls" trigger="click">
     <div class="flex items-center">
-      <img
-        src="@/assets/imgs/avatar.jpg"
-        alt=""
-        class="w-[calc(var(--logo-height)-25px)] rounded-[50%]"
-      />
+      <img :src="avatar" alt="" class="w-[40px] h-[40px] rounded-[50%]" />
       <span class="<lg:hidden text-14px pl-[5px] text-[var(--top-header-text-color)]">{{
         userStore.getUserInfo?.username
       }}</span>
